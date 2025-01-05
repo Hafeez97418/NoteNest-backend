@@ -401,3 +401,5 @@ FodyWeavers.xsd
 
 *.key
 .env
+/dist
+.tsbuildinfo

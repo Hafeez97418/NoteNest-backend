@@ -4,6 +4,7 @@ import { readFileSync } from "fs";
 import jwt from "jsonwebtoken";
 import catchAsyncError from "../utils/catchAsyncError";
 import { RequestWithUserId } from "../types";
+import Users from "../models/Users";
 
 export const validationPass = (
   req: Request,
@@ -18,8 +19,6 @@ export const validationPass = (
   next();
 };
 
-//custom Request with user
-
 export const isLoggedIn = catchAsyncError(
   async (req: RequestWithUserId, res: Response, next: NextFunction) => {
     const cookie = req.cookies;
@@ -32,6 +31,20 @@ export const isLoggedIn = catchAsyncError(
     const secret = readFileSync("public.key", "utf8");
     const decoded = jwt.verify(token, secret) as { user: string };
     req.user = decoded.user;
+    next();
+  }
+);
+export const isAdmin = catchAsyncError(
+  async (req: RequestWithUserId, res: Response, next: NextFunction) => {
+    const userId = req.user; //it has user because we are have used isLoggedIn middleware before this
+    const isAdminVar: boolean = await Users.findById(userId).then((result) => {
+      if (result === null) return false;
+      if (result.role === undefined) return false;
+      return result.role === "admin";
+    });
+    if (!isAdminVar) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
     next();
   }
 );

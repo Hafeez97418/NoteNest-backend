@@ -17,3 +17,9 @@ export interface RequestWithUserObject extends Request {
 export interface RequestWithUserId extends Request {
   user?: string;
 }
+
+export type TypeTheme = {
+  _id?:string,
+  color: string,
+  name:string,
+}

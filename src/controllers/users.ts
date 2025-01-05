@@ -66,18 +66,20 @@ const updateUserName = catchAsyncError(
     const userId = req.user;
     const { firstName, lastName } = req.body;
     const updated = await Users.findByIdAndUpdate(userId, {
-      $set: { firstName, lastName },
+      $set: { firstName, lastName, updatedAt: Date.now() },
     });
     if (updated === null) {
       throw new Error("oops something went wrong please try again later");
     }
-    res.status(200).json({ success: true, message: "user updated successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "user updated successfully" });
   }
 );
 
 /**
  *  deletes the user. used for deactivating account
- * isLoggedIn : true 
+ * isLoggedIn : true
  * */
 const deleteUser = catchAsyncError(
   async (req: RequestWithUserId, res: Response) => {

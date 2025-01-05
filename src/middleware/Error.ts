@@ -11,15 +11,10 @@ const ErrorMiddleWare = (
         res.status(400).json({ success: false, message: error.message });
         break;
       case "CastError":
-        res.status(400).json({ success: false, message: "Invalid user" });
+        res.status(400).json({ success: false, message: "Invalid object id" });
         break;
       case "MongoServerError":
-        if (error.message.includes("E11000 duplicate key error collection"))
-          res.status(400).json({
-            success: false,
-            message: "a user with this email already exists",
-          });
-        else res.status(500).json({ success: false, message: error.message });
+        res.status(400).json({ success: false, message: error.message });
         break;
       default:
         console.error(error.name);

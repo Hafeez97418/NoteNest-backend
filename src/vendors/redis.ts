@@ -3,28 +3,42 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-// Create a Redis client
-const client = createClient({
-  username: "default",
-  password: process.env.REDIS_PASSWORD,
-  socket: {
-    host: "redis-14268.c267.us-east-1-4.ec2.redns.redis-cloud.com",
-    port: 14268,
-  },
-});
+let connection:any | undefined; // To store the Redis client instance
 
-// Handle connection errors
-client.on("error", (err) => console.log("Redis Client Error:", err));
+const getRedisClient = () => {
+  if (!connection) {
+    // Create the Redis client if it doesn't exist
+    connection = createClient({
+      username: "default",
+      password: process.env.REDIS_PASSWORD,
+      socket: {
+        host: "redis-14268.c267.us-east-1-4.ec2.redns.redis-cloud.com",
+        port: 14268,
+      },
+    });
+
+    // Handle connection errors
+    connection.on("error", (err:ErrorConstructor) => console.log("Redis Client Error:", err));
+  }
+
+  return connection;
+};
 
 // Connect once and reuse the client
+  const client = getRedisClient();
 (async () => {
-  try {
-    await client.connect();
-    console.log("Connected to Redis!");
-  } catch (err) {
-    console.error("Failed to connect to Redis:", err);
+
+  if (!client.isOpen) {
+    try {
+      console.log("Connecting to Redis...");
+      await client.connect();
+      console.log("Connected to Redis!");
+    } catch (err) {
+      console.error("Failed to connect to Redis:", err);
+    }
+  } else {
+    console.log("Redis client is already connected.");
   }
 })();
 
 export default client;
-
