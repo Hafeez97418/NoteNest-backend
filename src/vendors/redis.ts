@@ -7,6 +7,7 @@ let connection:any | undefined; // To store the Redis client instance
 
 const getRedisClient = () => {
   if (!connection) {
+      console.log("Connecting to Redis...");
     // Create the Redis client if it doesn't exist
     connection = createClient({
       username: "default",
@@ -30,7 +31,6 @@ const getRedisClient = () => {
 
   if (!client.isOpen) {
     try {
-      console.log("Connecting to Redis...");
       await client.connect();
       console.log("Connected to Redis!");
     } catch (err) {

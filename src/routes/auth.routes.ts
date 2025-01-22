@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { login, logout, register } from "../controllers/auth";
+import { getUser, login, logout, register } from "../controllers/auth";
 import { registerValidation } from "./userBodyValidation";
 import { body } from "express-validator";
 import { isLoggedIn, validationPass } from "../middleware/ValidateRequests";
@@ -15,5 +15,7 @@ authRouter.post(
   validationPass,
   login
 );
-authRouter.post("/user/logout", isLoggedIn, logout);
+authRouter
+  .post("/user/logout", isLoggedIn, logout)
+  .get("/user/me", isLoggedIn, getUser);
 export default authRouter;

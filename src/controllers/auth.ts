@@ -2,17 +2,16 @@ import { CookieOptions, NextFunction, Request, Response } from "express";
 import catchAsyncError from "../utils/catchAsyncError";
 import client from "../vendors/redis";
 import Users from "../models/Users";
-import { TypeUser } from "../types";
+import { RequestWithUserId, TypeUser } from "../types";
 import { createToken, HashPassword } from "../utils/utility";
 import bcrypt from "bcrypt";
 
-const isProduction: string | undefined = process.env.MODE;
-
+const isProduction = process.env.NODE_ENV === "production";
 const cookieOptions: CookieOptions = {
   httpOnly: true, // Prevents JavaScript access
-  secure: isProduction === "production", // Use HTTPS in production, HTTP in development
-  sameSite: "none", // "none" for cross-origin in prod
-  maxAge: 3600000, // 1-hour expiration
+  secure: isProduction, // Use HTTPS in production, HTTP in development
+  sameSite:isProduction? "none" : "lax", // "none" for cross-origin in prod
+  maxAge: 24 * 60 * 60 * 1000, // 1-day expiration
 };
 
 const register = catchAsyncError(
@@ -56,7 +55,7 @@ const login = catchAsyncError(
         .status(400)
         .json({ success: false, message: "Invalid credentials" });
     }
-    const token = createToken(userInDb);    
+    const token = createToken(userInDb);
     res.cookie("authToken", token, cookieOptions);
     res
       .status(200)
@@ -72,5 +71,10 @@ const logout = catchAsyncError(async (req: Request, res: Response) => {
   res.status(200).json({ success: true, message: "Logged out successfully" });
 });
 
-
-export { register, login, logout, cookieOptions };
+const getUser = catchAsyncError(
+  async (req: RequestWithUserId, res: Response) => {
+    const user = req.user;
+    res.status(200).json({ success: true, message:"you are logged in" });
+  }
+);
+export { register, login, logout, getUser, cookieOptions };

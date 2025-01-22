@@ -8,7 +8,7 @@ import {
 } from "../controllers/users";
 import { sendVerification } from "../middleware/verifyUsers";
 import { bodyValidation } from "./userBodyValidation";
-import { isLoggedIn, validationPass } from "../middleware/ValidateRequests";
+import { isAdmin, isLoggedIn, validationPass } from "../middleware/ValidateRequests";
 import { body } from "express-validator";
 
 const UsersRouter: Router = Router();
@@ -20,7 +20,7 @@ UsersRouter.post(
   validationPass,
   createUser,
   sendVerification
-).get("/users/all", getAllUsers);
+).get("/users/all",isLoggedIn , isAdmin , getAllUsers);
 //same route segments
 UsersRouter.route("/user")
   .get(isLoggedIn, getUser)

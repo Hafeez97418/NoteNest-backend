@@ -23,6 +23,6 @@ themeRouter
     createTheme
   );
 
-themeRouter.delete("/theme/:id", deleteTheme);
+themeRouter.delete("/theme/:id",isLoggedIn , isAdmin ,deleteTheme);
 
 export default themeRouter;
