@@ -8,7 +8,11 @@ import {
 } from "../controllers/users";
 import { sendVerification } from "../middleware/verifyUsers";
 import { bodyValidation } from "./userBodyValidation";
-import { isAdmin, isLoggedIn, validationPass } from "../middleware/ValidateRequests";
+import {
+  isAdmin,
+  isLoggedIn,
+  validationPass,
+} from "../middleware/ValidateRequests";
 import { body } from "express-validator";
 
 const UsersRouter: Router = Router();
@@ -20,7 +24,7 @@ UsersRouter.post(
   validationPass,
   createUser,
   sendVerification
-).get("/users/all",isLoggedIn , isAdmin , getAllUsers);
+).get("/users/all", isLoggedIn, isAdmin, getAllUsers);
 //same route segments
 UsersRouter.route("/user")
   .get(isLoggedIn, getUser)
@@ -35,9 +39,9 @@ UsersRouter.route("/user")
       body("lastName")
         .isLength({ max: 64 })
         .withMessage("last name's length must be less than 65 characters"),
-      ],
+    ],
     validationPass,
     updateUserName
-  )
-  .delete(isLoggedIn, deleteUser);
+  );
+UsersRouter.route("/user/:id").delete(isLoggedIn, isAdmin , deleteUser);
 export default UsersRouter;

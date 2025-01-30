@@ -11,8 +11,10 @@ import notesRouter from "./routes/notes.routes";
 import cors, { CorsOptions } from "cors";
 dotEnv.config();
 
-var corsOptions:CorsOptions = {
-  origin: "http://localhost:5173",
+const ORIGIN = process.env.ALLOWED_ORIGIN;
+
+var corsOptions: CorsOptions = {
+  origin: ORIGIN ? ORIGIN : "*",
   optionsSuccessStatus: 200,
   credentials: true,
 };

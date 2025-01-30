@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import Users from "../models/Users";
 import { RequestWithUserId, RequestWithUserObject, TypeUser } from "../types";
 import catchAsyncError from "../utils/catchAsyncError";
-import { cookieOptions } from "./auth";
 
 /**
  *  create user before register than send for verification
@@ -83,15 +82,11 @@ const updateUserName = catchAsyncError(
  * */
 const deleteUser = catchAsyncError(
   async (req: RequestWithUserId, res: Response) => {
-    const userId = req.user;
+    const userId = req.params.id;
     const updated = await Users.findByIdAndDelete(userId);
     if (updated === null) {
       throw new Error("oops something went wrong please try again later");
     }
-    const deleteCookieOptions = { ...cookieOptions };
-    deleteCookieOptions.maxAge = 0;
-    deleteCookieOptions.expires = new Date(0);
-    res.cookie("authToken", "deleted", deleteCookieOptions);
     res
       .status(200)
       .json({ success: true, message: "user deleted successfully" });
